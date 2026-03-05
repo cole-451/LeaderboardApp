@@ -1,7 +1,7 @@
 ﻿namespace LeaderboardApp.Data.Interfaces
 {
-    public class IScoreable
+    public interface IScoreable
     {
-
+        
     }
 }

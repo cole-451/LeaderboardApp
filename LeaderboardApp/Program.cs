@@ -1,4 +1,6 @@
 using LeaderboardApp.Components;
+using LeaderboardApp.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +9,10 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 var app = builder.Build();
+
+builder.Services.AddDbContext<ScoreDbContext>(options =>
+    options.UseSqlite("API_KEY")
+);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

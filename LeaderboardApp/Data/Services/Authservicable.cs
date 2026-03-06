@@ -1,5 +1,5 @@
-﻿using LeaderboardApp.Data.Models;
-using static LeaderboardApp.Data.Models.Auth;
+﻿using LeaderboardApp.Models;
+using static LeaderboardApp.Models.Auth;
 
 public static class AuthServiceable
 {

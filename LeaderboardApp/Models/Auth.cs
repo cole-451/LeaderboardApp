@@ -1,4 +1,4 @@
-﻿namespace LeaderboardApp.Data.Models
+﻿namespace LeaderboardApp.Models
 {
     public class Auth
     {

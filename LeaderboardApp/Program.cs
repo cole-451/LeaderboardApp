@@ -7,12 +7,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
-var app = builder.Build();
+string? connectionString = builder.Configuration.GetConnectionString("API_KEY");
 
 builder.Services.AddDbContext<ScoreDbContext>(options =>
-    options.UseSqlite("API_KEY")
+    options.UseSqlite(connectionString)
 );
+var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

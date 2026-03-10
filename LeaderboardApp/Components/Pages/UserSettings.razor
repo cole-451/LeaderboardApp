@@ -1,13 +1,90 @@
 ﻿@page "/user-settings"
-@using LeaderboardApp.Models
+@inject AuthServiceable AuthService
+@inject AppState AppState
+@inject NavigationManager Nav
+@rendermode InteractiveServer
 
-<PageTitle>User Settings</PageTitle>
+<p>IsLoggedIn: @AppState.IsLoggedIn</p>
+<p>isRegistering: @isRegistering</p>
 
-<h3>UserSettings</h3>
+<p>Email: @email</p>
+<p>Password: @password</p>
+
+<h3>Login</h3>
+@if (AppState.IsLoggedIn)
+{
+    <h3>Welcome, @AppState.CurrentUser!.Username</h3>
+    <p>Role: @AppState.CurrentUser.Role</p>
+    <button @onclick="HandleLogout">Logout</button>
+}
+
+else if (!isRegistering)
+{
+    <div>
+        <input placeholder="Email" value="@email" @oninput="e => email = e.Value?.ToString() ?? string.Empty" />
+        <input placeholder="Password" type="password" value="@password" @oninput="e => password = e.Value?.ToString() ?? string.Empty" />
+        <button @onclick="HandleLogin">Login</button>
+        <button @onclick="() => { isRegistering = true; StateHasChanged(); }">Create Account</button>
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <p style="color:red">@errorMessage</p>
+        }
+    </div>
+}
+else
+{
+    <h3>Register</h3>
+    <div>
+        <input placeholder="Email" @bind="email" />
+        <input placeholder="Username" @bind="username" />
+        <input placeholder="Password" type="password" @bind="password" />
+        <button @onclick="HandleRegister">Register</button>
+        <button @onclick="() => isRegistering = false">Back to Login</button>
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <p style="color:red">@errorMessage</p>
+        }
+    </div>
+}
 
 @code {
-	//okay so user settings will display a "login" or "signup" button. the login will take you to a login page, 
-	// and the signup will take you to a signup page. these will be routable. Then when youre logged in you can see your stuff, edit whatever.
-	//sign out button. 
+    private string email = "";
+    private string username = "";
+    private string password = "";
+    private string errorMessage = "";
+    private bool isRegistering = false;
 
+    private void HandleLogin()
+    {
+        Console.WriteLine($"Trying login with: {email}");
+        var user = AuthService.Login(email, password);
+        Console.WriteLine($"User found: {user != null}");
+        if (user != null)
+        {
+            AppState.SetUser(user);
+            Nav.NavigateTo("/leaderboard");
+        }
+        else
+        {
+            errorMessage = "Invalid email or password.";
+        }
+    }
+
+    private void HandleRegister()
+    {
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        {
+            errorMessage = "All fields are required.";
+            return;
+        }
+        AuthService.Register(email, username, password);
+        errorMessage = "";
+        isRegistering = false;
+    }
+
+    private void HandleLogout()
+    {
+        AppState.Logout();
+        Nav.NavigateTo("/");
+    }
 }

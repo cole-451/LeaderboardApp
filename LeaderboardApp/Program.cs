@@ -1,6 +1,7 @@
 using LeaderboardApp.Components;
 using LeaderboardApp.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Net.NetworkInformation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,9 @@ string? connectionString = builder.Configuration.GetConnectionString("API_KEY");
 builder.Services.AddDbContext<ScoreDbContext>(options =>
     options.UseSqlite(connectionString)
 );
+builder.Services.AddScoped<AuthServiceable>();
+builder.Services.AddSingleton<AppState>();
+
 var app = builder.Build();
 
 

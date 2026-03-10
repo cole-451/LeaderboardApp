@@ -1,22 +1,31 @@
 ﻿using LeaderboardApp.Models;
-using static LeaderboardApp.Models.Auth;
+using LeaderboardApp.Data;
+using Microsoft.EntityFrameworkCore;
 
-public static class AuthServiceable
+public class AuthServiceable
 {
-    private static List<Auth> Users = new()
-    {
-        new Auth(AuthType.admin, "admin@gh3.com", "Admin", "admin123"),
-        new Auth(AuthType.user, "jake@gh3.com", "SlashFan99", "pass123"),
-        new Auth(AuthType.user, "sara@gh3.com", "RockGod42", "pass456"),
-    };
+    private readonly ScoreDbContext _db;
 
-    public static Auth? Login(string email, string password)
+    public AuthServiceable(ScoreDbContext db)
     {
-        return Users.FirstOrDefault(u => u.Email == email && u.Password == password);
+        _db = db;
     }
 
-    public static void Register(string email, string username, string password)
+    public Users? Login(string email, string password)
     {
-        Users.Add(new Auth(AuthType.user, email, username, password));
+        return _db.Users.FirstOrDefault(u => u.Email == email && u.Password == password);
+    }
+
+    public void Register(string email, string username, string password)
+    {
+        var newUser = new Users
+        {
+            Email = email,
+            Username = username,
+            Password = password,
+            Role = "user"
+        };
+        _db.Users.Add(newUser);
+        _db.SaveChanges();
     }
 }
